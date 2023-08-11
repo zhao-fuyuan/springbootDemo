@@ -6,10 +6,12 @@ import com.example.demo.model.po.Users;
 import com.example.demo.model.response.UsersResponse;
 import com.example.demo.response.ResponseUtil;
 import com.example.demo.response.ResultWrapper;
+import com.example.demo.response.TokenResponse;
 import org.springframework.web.bind.annotation.*;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/v1")
@@ -27,9 +29,10 @@ public class UsersController {
     @PostMapping("/user/register")
     public ResultWrapper<Void> initUser(@RequestBody Users request){
         userManager.initUser(request);
-        if(1==2){
-            return ResponseUtil.error(ResponseError.SYSTEM_ERROR);
-        }
         return ResponseUtil.success("success");
+    }
+    @PostMapping("/user/login")
+    public ResultWrapper<TokenResponse> login(@RequestBody String code, HttpServletRequest httpServletRequest){
+        return userManager.login(code,httpServletRequest);
     }
 }
