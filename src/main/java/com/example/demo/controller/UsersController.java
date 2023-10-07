@@ -31,8 +31,4 @@ public class UsersController {
         userManager.initUser(request);
         return ResponseUtil.success("success");
     }
-    @PostMapping("/user/login")
-    public ResultWrapper<TokenResponse> login(@RequestBody String code, HttpServletRequest httpServletRequest){
-        return userManager.login(code,httpServletRequest);
-    }
 }
