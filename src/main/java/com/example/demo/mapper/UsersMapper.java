@@ -2,7 +2,7 @@ package com.example.demo.mapper;
 
 import com.example.demo.model.po.Users;
 import org.apache.ibatis.annotations.Param;
-import tk.mybatis.mapper.common.BaseMapper;
+import com.example.demo.baseMapper.BaseMapper;
 
 import java.util.List;
 
