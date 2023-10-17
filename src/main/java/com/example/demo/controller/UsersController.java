@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @RestController
 @RequestMapping("/v1")
@@ -22,8 +23,8 @@ public class UsersController {
 
 
     @GetMapping("/users/list")
-    public ResultWrapper<UsersResponse> getUsers(@RequestParam Integer pageNo, @RequestParam Integer pageSize){
-        UsersResponse res = userManager.getUsers(pageNo,pageSize);
+    public ResultWrapper<List<UsersResponse>> getUsers(@RequestParam Integer pageNo, @RequestParam Integer pageSize){
+        List<UsersResponse> res = userManager.getUsers(pageNo,pageSize);
         return ResponseUtil.success(res);
     }
     @PostMapping("/user/register")
