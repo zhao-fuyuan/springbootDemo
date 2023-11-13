@@ -27,6 +27,11 @@ public class UsersServiceImpl implements IUsersService {
     }
 
     @Override
+    public Users getUserByUserName(String userName) {
+        return usersMapper.getUserByUserName(userName);
+    }
+
+    @Override
     public Integer getUsersCount() {
         return usersMapper.getUsersCount();
     }

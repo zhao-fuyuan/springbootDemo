@@ -10,6 +10,8 @@ public interface IUsersService {
 
     List<Users> getUsers(Integer pageSize, Integer pageNo);
 
+    Users getUserByUserName(String userName);
+
     Integer getUsersCount();
 
     int createUser(Users request);
