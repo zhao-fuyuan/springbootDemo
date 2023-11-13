@@ -14,6 +14,7 @@ import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import lombok.var;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,6 +35,12 @@ public class UsersController {
     private UsersManager userManager;
     @Resource
     private UsersServiceImpl usersServiceImpl;
+
+    @Value("${spring.social.weixin.app-id}")
+    private String appid;
+
+    @Value("${spring.social.weixin.app-secret}")
+    private String appSecret;
 
 
     @GetMapping("/users/list")
@@ -57,7 +64,7 @@ public class UsersController {
             return ResponseUtil.error("505","用户名或密码错误","用户名或密码错误");
         }
         if (user.getPassword().equals(request.getPassWord())) {
-            TokenResponse token = userManager.thirdPartLogin("wx245a7eb6cdfe0bcc", "da96b5f8ff01455bdfd5e46470bf8b12", request.getCode(), user, httpServletRequest);
+            TokenResponse token = userManager.thirdPartLogin(appid, appSecret, request.getCode(), user, httpServletRequest);
             return ResponseUtil.success(token);
         }
         return ResponseUtil.error("505","用户名或密码错误","用户名或密码错误");
