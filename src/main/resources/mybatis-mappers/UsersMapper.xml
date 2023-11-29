@@ -7,16 +7,16 @@
     -->
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="username" jdbcType="VARCHAR" property="username" />
-    <result column="email" jdbcType="VARCHAR" property="email" />
-    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="openid" jdbcType="VARCHAR" property="openid" />
+    <result column="avatarurl" jdbcType="VARCHAR" property="avatarurl" />
     <result column="status" jdbcType="INTEGER" property="status" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
   </resultMap>
   <sql id="baseColumns">
-     username, email,status
+     username, avatarurl,status
   </sql>
   <sql id="insertColumns">
-     username, email, password, status
+     username, openid, avatarurl, status
   </sql>
   <select id="getUsers" resultMap="BaseResultMap">
     select <include refid="baseColumns" />
@@ -28,6 +28,11 @@
     select *
     from users
     where username = #{userName}
+  </select>
+  <select id="getUserByOpenId" resultMap="BaseResultMap">
+    select *
+    from users
+    where openid = #{openId}
   </select>
   <select id="getUsersCount" resultType="java.lang.Integer">
     select count(1)

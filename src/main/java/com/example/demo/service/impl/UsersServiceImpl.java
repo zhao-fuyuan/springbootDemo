@@ -32,6 +32,11 @@ public class UsersServiceImpl implements IUsersService {
     }
 
     @Override
+    public Users getUserByOpenId(String openId) {
+        return usersMapper.getUserByOpenId(openId);
+    }
+
+    @Override
     public Integer getUsersCount() {
         return usersMapper.getUsersCount();
     }

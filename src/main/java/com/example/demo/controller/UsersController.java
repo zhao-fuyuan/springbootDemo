@@ -33,19 +33,16 @@ import com.example.demo.service.impl.UsersServiceImpl;
 public class UsersController {
     @Resource
     private UsersManager userManager;
-    @Resource
-    private UsersServiceImpl usersServiceImpl;
-
-    @Value("${spring.social.weixin.app-id}")
-    private String appid;
-
-    @Value("${spring.social.weixin.app-secret}")
-    private String appSecret;
 
 
     @GetMapping("/users/list")
     public ResultWrapper<List<UsersResponse>> getUsers(@RequestParam Integer pageNo, @RequestParam Integer pageSize){
         List<UsersResponse> res = userManager.getUsers(pageNo,pageSize);
+        return ResponseUtil.success(res);
+    }
+    @GetMapping("/start")
+    public ResultWrapper<UsersResponse> start(HttpServletRequest httpServletRequest){
+        UsersResponse res = userManager.getUser(httpServletRequest);
         return ResponseUtil.success(res);
     }
     @PostMapping("/user/register")
@@ -56,17 +53,6 @@ public class UsersController {
     @PostMapping("/users/login")
     public ResultWrapper<TokenResponse> miniAppLogin(@RequestBody LoginRequest request,
                                                      HttpServletRequest httpServletRequest) {
-        log.info("PassportController#thirdPartLogin-request code:{},type:{}",request.getCode(),request.getType());
-        log.info("request is {},{}",request.getUserName(),request.getPassWord());
-        Users user = usersServiceImpl.getUserByUserName(request.getUserName());
-
-        if (user.getPassword().isEmpty()){
-            return ResponseUtil.error("505","用户名或密码错误","用户名或密码错误");
-        }
-        if (user.getPassword().equals(request.getPassWord())) {
-            TokenResponse token = userManager.thirdPartLogin(appid, appSecret, request.getCode(), user, httpServletRequest);
-            return ResponseUtil.success(token);
-        }
-        return ResponseUtil.error("505","用户名或密码错误","用户名或密码错误");
+        return userManager.doLogin(request,httpServletRequest);
     }
 }

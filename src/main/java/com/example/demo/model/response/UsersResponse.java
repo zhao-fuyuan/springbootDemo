@@ -13,8 +13,8 @@ public class UsersResponse {
     @ApiModelProperty("用户")
     private String username;
 
-    @ApiModelProperty("email")
-    private String email;
+    @ApiModelProperty("avatarurl")
+    private String avatarurl;
 
     @ApiModelProperty("status")
     private Integer status;

@@ -14,8 +14,8 @@ public class LoginRequest {
     @ApiModelProperty("userName")
     private String userName;
 
-    @ApiModelProperty("passWord")
-    private String passWord;
+    @ApiModelProperty("avatarurl")
+    private String avatarurl;
 
     @ApiModelProperty("type")
     private Integer type;

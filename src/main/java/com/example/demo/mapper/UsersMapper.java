@@ -11,7 +11,7 @@ public interface UsersMapper extends BaseMapper<Users> {
     List<Users> getUsers(@Param("pageNo")Integer pageNo, @Param("pageSize")Integer pageSize);
 
     Users getUserByUserName(@Param("userName")String userName);
-
+    Users getUserByOpenId(@Param("openId")String openId);
     Integer getUsersCount();
 
 }

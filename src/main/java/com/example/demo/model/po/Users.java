@@ -19,11 +19,7 @@ public class Users {
 
     private String openid;
 
-    private String email;
-
-
-
-    private String password;
+    private String avatarurl;
 
     /**
      * 用户状态：1正常2注销

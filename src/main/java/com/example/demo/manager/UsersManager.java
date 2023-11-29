@@ -1,17 +1,21 @@
 package com.example.demo.manager;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSON;
 import com.example.demo.model.po.Users;
+import com.example.demo.model.request.LoginRequest;
 import com.example.demo.model.response.UsersResponse;
+import com.example.demo.response.ResponseUtil;
+import com.example.demo.response.ResultWrapper;
 import com.example.demo.response.TokenResponse;
 import com.example.demo.service.impl.UsersServiceImpl;
 import com.example.demo.util.RequestUtils;
 import cn.hutool.json.JSONObject;
-import io.jsonwebtoken.JwtBuilder;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.User;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,14 +32,22 @@ import java.util.stream.Collectors;
 public class UsersManager {
     @Resource
     private UsersServiceImpl usersServiceImpl;
+    @Value("${spring.social.weixin.app-id}")
+    private String appid;
+
+    @Value("${spring.social.weixin.app-secret}")
+    private String appSecret;
+
+    @Resource
+    private UsersManager userManager;
 
     @Transactional
-    public List<UsersResponse> getUsers(Integer pageNo, Integer pageSize){
+    public List<UsersResponse> getUsers(Integer pageNo, Integer pageSize) {
 //        List<UsersPO> result = usersServiceImpl.getUsersAll();
 
-        List<Users> poList = usersServiceImpl.getUsers((pageNo-1)*pageSize,pageSize);
+        List<Users> poList = usersServiceImpl.getUsers((pageNo - 1) * pageSize, pageSize);
         Integer total = usersServiceImpl.getUsersCount();
-        log.info("Users Total is {}",total);
+        log.info("Users Total is {}", total);
         return poList.stream().map(item -> {
             UsersResponse response = new UsersResponse();
             BeanUtils.copyProperties(item, response);
@@ -43,22 +55,31 @@ public class UsersManager {
         }).collect(Collectors.toList());
     }
 
-    public int initUser(Users request){
+    public UsersResponse getUser(HttpServletRequest request){
+        String token = request.getHeader("accessToken");
+        JwtParser jwtParser = Jwts.parser();
+//        Object user = jwtParser.setSigningKey("user").parseClaimsJws(token).getBody().get("user");
+        String user =  jwtParser.setSigningKey("user").parseClaimsJws(token).getBody().get("user").toString();
+        String[] personDate = user.split(",");
+        UsersResponse response = new UsersResponse();
+        response.setUsername(personDate[1].split("=")[1]);
+        response.setAvatarurl(personDate[3].split("=")[1]);
+        response.setStatus(Integer.valueOf(personDate[4].split("=")[1]));
+        return response;
+    }
+
+    public int initUser(Users request) {
         return usersServiceImpl.createUser(request);
     }
 
-    public TokenResponse thirdPartLogin(String appid, String secret, String code,Users user, HttpServletRequest request) {
+    public TokenResponse thirdPartLogin(String appid, String secret, String code, Users user, HttpServletRequest request) {
 
-        String result = RequestUtils.getOpenIdByCode(appid, secret, code);
-        System.out.println("result:" + result);
-        // 提取openid
-        String openid = new JSONObject(result).getStr("openid");
-        String userJson = JSON.toJSONString(user);
+//        String userJson = JSON.toJSONString(user);
         JwtBuilder jwtBuilder = Jwts.builder(); //获得JWT构造器
 
-        Map<String,Object> map=new Hashtable<>();
+        Map<String, Object> map = new Hashtable<>();
 
-        map.put("user",userJson);
+        map.put("user", user);
 
         String accessToken = jwtBuilder.setSubject("user") //设置用户数据
 
@@ -68,7 +89,7 @@ public class UsersManager {
 
                 .setClaims(map) //通过map传值
 
-                .setExpiration(new Date(System.currentTimeMillis() + 500000)) //设置token有效期
+                .setExpiration(new Date(System.currentTimeMillis() + 2592000)) //设置token有效期
 
                 .signWith(SignatureAlgorithm.HS256, "user") //设置token加密方式和密码
 
@@ -82,6 +103,27 @@ public class UsersManager {
         return token;
     }
 
-    }
+    public ResultWrapper<TokenResponse> doLogin(LoginRequest request,
+                                                HttpServletRequest httpServletRequest) {
+        log.info("PassportController#thirdPartLogin-request code:{},type:{}", request.getCode(), request.getType());
+        log.info("request is {},{}", request.getUserName(), request.getAvatarurl());
+        String result = RequestUtils.getOpenIdByCode(appid, appSecret, request.getCode());
+        System.out.println("result:" + result);
+        // 提取openid
+        String openid = new JSONObject(result).getStr("openid");
+        Users user = usersServiceImpl.getUserByOpenId(openid);
+//        Users user = usersServiceImpl.getUserByUserName(request.getUserName());
+        if (ObjectUtil.isEmpty(user)) {
+            user = new Users();
+            user.setOpenid(openid);
+            user.setUsername(request.getUserName());
+            user.setStatus(1);
+            user.setAvatarurl(request.getAvatarurl());
+            userManager.initUser(user);
+        }
+        TokenResponse token = this.thirdPartLogin(appid, appSecret, request.getCode(), user, httpServletRequest);
+        return ResponseUtil.success(token);
 
+    }
+}
 

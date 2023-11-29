@@ -2,6 +2,7 @@ package com.example.demo.util;
 
 import com.alibaba.fastjson.JSON;
 import io.jsonwebtoken.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -15,6 +16,7 @@ import java.io.PrintWriter;
 
 @Component
 @CrossOrigin
+@Slf4j
 public class JwtInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -33,6 +35,7 @@ public class JwtInterceptor implements HandlerInterceptor {
             JwtParser jwtParser = Jwts.parser();
             jwtParser.setSigningKey("user");
             jwtParser.parseClaimsJws(token);
+            log.info(jwtParser.setSigningKey("user").parseClaimsJws(token).getBody().toString());
             return true;
         } catch (ExpiredJwtException e) {
             doResponse(response, "Token已过期2，请重新登陆！");

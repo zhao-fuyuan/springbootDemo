@@ -12,6 +12,8 @@ public interface IUsersService {
 
     Users getUserByUserName(String userName);
 
+    Users getUserByOpenId(String openId);
+
     Integer getUsersCount();
 
     int createUser(Users request);
