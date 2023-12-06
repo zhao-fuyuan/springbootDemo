@@ -14,6 +14,8 @@ public interface IUsersService {
 
     Users getUserByOpenId(String openId);
 
+    Integer updateUserById(String username,String avatarurl,Integer id);
+
     Integer getUsersCount();
 
     int createUser(Users request);

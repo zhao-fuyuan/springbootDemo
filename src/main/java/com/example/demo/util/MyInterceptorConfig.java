@@ -14,6 +14,7 @@ public class MyInterceptorConfig implements WebMvcConfigurer {
         // WebMvcConfigurer.super.addInterceptors(registry);
         List<String> pathPatterns = new ArrayList<>();
         pathPatterns.add("/v1/users/list");
+        pathPatterns.add("/v1/user/update");
         pathPatterns.add("/v1/start");
         pathPatterns.add("/order/**");
         List<String> excludePathPatterns = new ArrayList<>();

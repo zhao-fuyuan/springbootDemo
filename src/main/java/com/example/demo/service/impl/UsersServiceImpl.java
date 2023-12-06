@@ -32,6 +32,11 @@ public class UsersServiceImpl implements IUsersService {
     }
 
     @Override
+    public Integer updateUserById(String username,String avatarurl,Integer id) {
+        return usersMapper.updateUserById(username,avatarurl,id);
+    }
+
+    @Override
     public Users getUserByOpenId(String openId) {
         return usersMapper.getUserByOpenId(openId);
     }

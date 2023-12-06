@@ -4,6 +4,7 @@ import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSON;
 import com.example.demo.model.po.Users;
 import com.example.demo.model.request.LoginRequest;
+import com.example.demo.model.request.updateUserRequest;
 import com.example.demo.model.response.UsersResponse;
 import com.example.demo.response.ResponseUtil;
 import com.example.demo.response.ResultWrapper;
@@ -68,6 +69,15 @@ public class UsersManager {
         return response;
     }
 
+    public int updateUser(updateUserRequest userRequest,HttpServletRequest request){
+        String token = request.getHeader("accessToken");
+        JwtParser jwtParser = Jwts.parser();
+//        Object user = jwtParser.setSigningKey("user").parseClaimsJws(token).getBody().get("user");
+        String user =  jwtParser.setSigningKey("user").parseClaimsJws(token).getBody().get("user").toString();
+        String[] personDate = user.split(",");
+        return usersServiceImpl.updateUserById(userRequest.getUsername(),userRequest.getAvatarurl(), Integer.valueOf(personDate[0].split("=")[1]));
+    }
+
     public int initUser(Users request) {
         return usersServiceImpl.createUser(request);
     }
@@ -106,7 +116,6 @@ public class UsersManager {
     public ResultWrapper<TokenResponse> doLogin(LoginRequest request,
                                                 HttpServletRequest httpServletRequest) {
         log.info("PassportController#thirdPartLogin-request code:{},type:{}", request.getCode(), request.getType());
-        log.info("request is {},{}", request.getUserName(), request.getAvatarurl());
         String result = RequestUtils.getOpenIdByCode(appid, appSecret, request.getCode());
         System.out.println("result:" + result);
         // 提取openid
@@ -116,9 +125,9 @@ public class UsersManager {
         if (ObjectUtil.isEmpty(user)) {
             user = new Users();
             user.setOpenid(openid);
-            user.setUsername(request.getUserName());
+            user.setUsername("微信用户");
             user.setStatus(1);
-            user.setAvatarurl(request.getAvatarurl());
+            user.setAvatarurl("https://thirdwx.qlogo.cn/mmopen/vi_32/POgEwh4mIHO4nibH0KlMECNjjGxQUq24ZEaGT4poC6icRiccVGKSyXwibcPq4BWmiaIGuG1icwxaQX6grC9VemZoJ8rg/132");
             userManager.initUser(user);
         }
         TokenResponse token = this.thirdPartLogin(appid, appSecret, request.getCode(), user, httpServletRequest);

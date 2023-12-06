@@ -18,6 +18,10 @@
   <sql id="insertColumns">
      username, openid, avatarurl, status
   </sql>
+  <update id="updateUserById">
+    update users set username= #{username},avatarurl= #{avatarurl}
+    where id=#{id}
+  </update>
   <select id="getUsers" resultMap="BaseResultMap">
     select <include refid="baseColumns" />
     from users

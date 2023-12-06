@@ -4,6 +4,7 @@ import cn.hutool.jwt.JWT;
 import com.example.demo.manager.UsersManager;
 import com.example.demo.model.po.Users;
 import com.example.demo.model.request.LoginRequest;
+import com.example.demo.model.request.updateUserRequest;
 import com.example.demo.model.response.UsersResponse;
 import com.example.demo.response.ResponseUtil;
 import com.example.demo.response.ResultWrapper;
@@ -54,5 +55,11 @@ public class UsersController {
     public ResultWrapper<TokenResponse> miniAppLogin(@RequestBody LoginRequest request,
                                                      HttpServletRequest httpServletRequest) {
         return userManager.doLogin(request,httpServletRequest);
+    }
+    @PostMapping("/user/update")
+    public ResultWrapper<Void> updateUser(@RequestBody updateUserRequest request,
+                                          HttpServletRequest httpServletRequest){
+        userManager.updateUser(request,httpServletRequest);
+        return ResponseUtil.success("success");
     }
 }

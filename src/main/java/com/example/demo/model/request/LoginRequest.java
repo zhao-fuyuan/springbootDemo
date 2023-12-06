@@ -11,12 +11,6 @@ public class LoginRequest {
     @ApiModelProperty("code")
     private String code;
 
-    @ApiModelProperty("userName")
-    private String userName;
-
-    @ApiModelProperty("avatarurl")
-    private String avatarurl;
-
     @ApiModelProperty("type")
     private Integer type;
 
